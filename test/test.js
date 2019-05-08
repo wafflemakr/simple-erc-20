@@ -1,22 +1,57 @@
 const MyToken = artifacts.require("MyToken");
 
-contract("MyToken", accounts => {
-  it("Token details correct", () => {
-    return MyToken.deployed().then(async instance => {
-      let app = instance;
+contract("MyToken", ([creator, randomAdd]) => {
 
-      name = await app.name();
-      assert.equal(name, "Gold Token", "incorrect name");
+  let name = "Gold Token";
+  let symbol = "GOLD";
+  let decimals = 10;
+  let supply = 21000000;
 
-      symbol = await app.symbol();
-      assert.equal(symbol, "GOLD", "incorrect symbol");
+  beforeEach(async () => {
+    this.myToken = await MyToken.new(name, symbol, decimals, supply);
+  });
 
-      decimals = await app.decimals();
-      assert.equal(decimals.toNumber(), 18, "incorrect decimals");
+  describe("Token::Deployment", () => {
+    it("Correct Name", async () => {
+      let x = await this.myToken.name();
+      assert.equal(x, name, "incorrect name");
+    })
 
-      supply = await app.totalSupply();
-      supply = web3.utils.fromWei(supply.toString(), "ether"); // This only works if decimals are 18 (wei)
-      assert.equal(supply, "21000000", "incorrect supply");
+    it("Correct Symbol", async () => {
+      let x = await this.myToken.symbol();
+      assert.equal(x, symbol, "incorrect symbol");
+    })
+
+    it("Correct Decimals", async () => {
+      let x = await this.myToken.decimals();
+      assert.equal(x.toNumber(), decimals, "incorrect decimals");
+    })
+
+    it("Correct Supply", async () => {
+      let x = await this.myToken.totalSupply();
+      let y = web3.utils.toBN(supply * (10 ** decimals))
+      assert.equal(x.toString(), y.toString(), "incorrect supply");
     });
   });
-});
+
+  describe("Token::Balance", () => {
+    it("Creator Balance should be total supply", async () => {
+      let balance = await this.myToken.balanceOf(creator);
+      let y = web3.utils.toBN(supply * (10 ** decimals))
+      assert.equal(balance.toString(), y.toString(), "incorrect balance of creator")
+    })
+
+    it("Should get Balance 0 for random Address", async () => {
+      let balance = await this.myToken.balanceOf(randomAdd);
+      assert.equal(balance.toString(), 0, "incorrect balance, should be 0")
+    })
+
+    it("Transfer and get new Balance", async () => {
+      await this.myToken.transfer(randomAdd, "1000000000000", { from: creator });
+      let balance = await this.myToken.balanceOf(randomAdd);
+      assert.equal(balance.toString(), "1000000000000", "incorrect balance of creator")
+    })
+
+  })
+
+})

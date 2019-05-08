@@ -12,7 +12,7 @@ This implementation requires the following prerequisites:
 Node.js® v10.15.0, Node Package Management (npm) v6.8.0
 ```
 
-[Node.js®](https://nodejs.org/en/) is a JavaScript runtime built on Chrome's V8 JavaScript engine. The installation includes npm. For other OS, refer to their website. This is installation for Ubuntu:
+[Node.js®](https://nodejs.org/en/) is a JavaScript runtime built on Chrome's V8 JavaScript engine. The installation includes npm. For other OS, refer to their website. This is the installation for Ubuntu (please check your installation instruction):
 
 ```
 curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
@@ -20,7 +20,7 @@ curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
 sudo apt-get install -y nodejs
 ```
 
-[ganache-cli](https://www.npmjs.com/package/ganache-cli) part of the Truffle suite of Ethereum development tools, is the command line version of Ganache, your personal blockchain for Ethereum development.
+[ganache-cli](https://www.npmjs.com/package/ganache-cli) part of the Truffle suite of Ethereum development tools, is the command line version of Ganache, your personal test blockchain for Ethereum development.
 
 ```
 npm install -g ganache-cli
@@ -46,13 +46,13 @@ Get gas for your transactions. You may need Rinkeby testnet ether or real ether:
 
 - [Rinkeby](https://faucet.rinkeby.io/) - Enter this link to the Rinkeby's faucet. Here you will need to use one of your social networks to claim some testnet ether (up to 18.5) per social link. Follow instructions in the website.
 
-- [Coinbase](https://www.coinbase.com/join/58787454ff90ca00dab65cb9) - Register at Coinbase. Buy some ether with your preferred method. Then send ether to your account's address generated with the mnemonic
+- [Coinbase](https://www.coinbase.com/join/58787454ff90ca00dab65cb9) - Register at Coinbase. Here yopu can buy some ether with your preferred method (this is if you want to deploy your token to mainnet). Then send ether to your account's address generated with the mnemonic
 
 Create a .env file on the project directory and copy:
 
 ```
-INFURA_KEY='Project Id from Infura'
-MNEMONIC='12 or 24 word seed'
+INFURA_KEY=<Project Id from Infura>
+MNEMONIC=<12 or 24 word seed>
 ```
 
 ### Testing
@@ -60,11 +60,10 @@ MNEMONIC='12 or 24 word seed'
 Run test, specifying the network you want to use with the --network tag:
 
 ```
+// Local Eth TestNode
 truffle test
-//or
+// or public testnet
 truffle test --network rinkeby
-//or
-truffle test --network main
 ```
 
 ### Deploying
@@ -83,10 +82,15 @@ Console will show the contract address in the second smart contract deployed und
 
 ### Interacting
 
-You can then interact with your deployed smart contract by calling an instance and its methods. You can also call other ERC-20 methods listed on the ERC20.sol file
+You can then interact with your deployed smart contract by calling an instance and its methods. You can also call other ERC-20 methods listed on the ERC20.sol file. Specify the network or remove it to use local Ganache TestNode. If you have already deployed your token and you want to run migrations again, you need to include the --reset flag
 
 ```
-truffle migrate --network rinkeby
+//Deploy your token
+truffle migrate --reset --network rinkeby
+
+//Open the console
+truffle console --network rinkeby
+
 //then
 MyToken.deployed().then(instance => app = instance)
 app.name()
